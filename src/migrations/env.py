@@ -13,7 +13,7 @@ from src.config import settings
 config = context.config
 config.set_main_option(
     "sqlalchemy.url",
-    settings.db.URL,
+    settings.db.URL,  # type: ignore
 )
 
 if config.config_file_name is not None:

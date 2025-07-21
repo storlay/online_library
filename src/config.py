@@ -30,12 +30,12 @@ class DatabaseSettings(BaseModel):
     PORT: int = os.getenv(
         "DB_PORT",
         5433,
-    )
-    URL: PostgresDsn = f"postgresql+asyncpg://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"
+    )  # type: ignore
+    URL: PostgresDsn = f"postgresql+asyncpg://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"  # type: ignore
 
 
 class AppSettings(BaseModel):
-    MODE: Literal["TEST", "LOCAL", "DEV", "PROD"] = os.getenv("APP_MODE")
+    MODE: Literal["TEST", "LOCAL", "DEV", "PROD"] = os.getenv("APP_MODE")  # type: ignore
 
 
 class Settings(BaseSettings):
