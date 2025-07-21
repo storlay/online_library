@@ -19,3 +19,27 @@ dependencies = [
     "sqlalchemy>=2.0.41",
     "uvicorn>=0.35.0",
 ]
+
+[tool.ruff]
+line-length = 88
+exclude = [
+    "src/migrations",
+]
+
+[tool.ruff.lint]
+select = [
+    "I",
+    "F",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint.isort]
+force-single-line = true
+lines-after-imports = 2
+
+[tool.pyright]
+include = [
+    "src",
+]
