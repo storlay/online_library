@@ -1,5 +1,6 @@
 import re
 
+import inflect
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import DeclarativeBase
@@ -16,19 +17,22 @@ async_session = async_sessionmaker(
     expire_on_commit=False,
 )
 
+inflect_engine = inflect.engine()
+
 
 class Base(DeclarativeBase):
     @declared_attr.directive
     @classmethod
     def __tablename__(cls) -> str:
         """
-        Converting a class name (CamelCase)
-        to a table name (snake_case).
-        :return: Table name.
+        Converts `CamelCase` class name
+        to plural `snake_case` table name.
+
+        :return: Pluralized snake_case table name.
         """
         name = re.sub(
             r"(?<!^)(?=[A-Z])",
             "_",
             cls.__name__,
         ).lower()
-        return name
+        return inflect_engine.plural(name)  # type: ignore
