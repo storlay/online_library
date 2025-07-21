@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings
 
+
 BASE_DIR = Path(__file__).parent.parent.parent
 
 
