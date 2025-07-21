@@ -12,6 +12,7 @@ dependencies = [
     "gunicorn>=23.0.0",
     "pre-commit>=4.2.0",
     "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
     "pyjwt[crypto]>=2.10.1",
     "pyright>=1.1.403",
     "redis>=6.2.0",
