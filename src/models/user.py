@@ -4,6 +4,7 @@ from sqlalchemy.orm import mapped_column
 
 from src.db import Base
 from src.db.mixins.pk import IntPkModelMixin
+from src.schemas.enums.user import UserRoleEnum
 
 
 class User(Base, IntPkModelMixin):
@@ -16,4 +17,7 @@ class User(Base, IntPkModelMixin):
     )
     last_name: Mapped[str | None] = mapped_column(
         String(255),
+    )
+    role: Mapped[UserRoleEnum] = mapped_column(
+        server_default=UserRoleEnum.reader.value,
     )
