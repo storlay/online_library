@@ -1,3 +1,4 @@
+import enum
 import os
 from pathlib import Path
 from typing import Literal
@@ -8,6 +9,12 @@ from pydantic_settings import BaseSettings
 
 
 BASE_DIR = Path(__file__).parent.parent.parent
+
+
+class RolesIDEnum(enum.IntEnum):
+    ADMIN = 1
+    AUTHOR = 2
+    READER = 3
 
 
 class DatabaseSettings(BaseModel):
