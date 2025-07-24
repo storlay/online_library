@@ -55,6 +55,6 @@ def get_current_user_by_token_type(token_type: str) -> Callable:
         user = await db.user.get_one_or_none(id=user_id)
         if not user:
             raise InvalidAuthTokenHTTPException
-        return user
+        return user  # type: ignore
 
     return get_user_from_payload
