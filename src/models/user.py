@@ -20,6 +20,9 @@ class User(Base, IntPkModelMixin):
         String(255),
         unique=True,
     )
+    password: Mapped[str] = mapped_column(
+        String(255),
+    )
     first_name: Mapped[str | None] = mapped_column(
         String(255),
     )
