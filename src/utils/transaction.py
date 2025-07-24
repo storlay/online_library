@@ -2,8 +2,12 @@ from abc import ABC
 from abc import abstractmethod
 from typing import Callable
 
+from src.repositories.user import UserRepository
+
 
 class BaseManager(ABC):
+    user: UserRepository
+
     @abstractmethod
     def __init__(self):
         """Initializing the manager"""
@@ -31,6 +35,7 @@ class TransactionManager(BaseManager):
 
     async def __aenter__(self):
         self.session = self.session_factory()
+        self.user = UserRepository(self.session)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
