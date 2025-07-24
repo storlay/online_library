@@ -1,4 +1,5 @@
 from typing import Annotated
+from typing import AsyncGenerator
 
 from fastapi import Depends
 
@@ -7,8 +8,10 @@ from src.utils.transaction import BaseManager
 from src.utils.transaction import TransactionManager
 
 
-async def get_db_transaction():
-    async with TransactionManager(session_factory=async_session) as transaction:
+async def get_db_transaction() -> AsyncGenerator[TransactionManager]:
+    async with TransactionManager(
+        session_factory=async_session,
+    ) as transaction:
         yield transaction
 
 
