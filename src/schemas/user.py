@@ -32,3 +32,15 @@ class UserSchema(BaseModel):
     first_name: str | None
     last_name: str | None
     role_id: IntegerId
+
+
+class UserWithPasswordSchema(UserSchema):
+    password: bytes
+
+    @field_validator(
+        "password",
+        mode="before",
+    )
+    @classmethod
+    def password_to_bytes(cls, value: str) -> bytes:
+        return value.encode("utf-8")
