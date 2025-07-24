@@ -125,3 +125,6 @@ cython_debug/
 
 # MacOS metadata
 .DS_Store
+
+# JWT Keys
+src/certs/jwt

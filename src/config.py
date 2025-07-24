@@ -1,5 +1,6 @@
 import enum
 import os
+from datetime import timedelta
 from pathlib import Path
 from typing import Literal
 
@@ -41,12 +42,29 @@ class DatabaseSettings(BaseModel):
     URL: PostgresDsn = f"postgresql+asyncpg://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"  # type: ignore
 
 
+class JWTSettings(BaseModel):
+    PRIVATE_KEY_PATH: Path = BASE_DIR / "src" / "certs" / "jwt" / "private.pem"
+    PUBLIC_KEY_PATH: Path = BASE_DIR / "src" / "certs" / "jwt" / "public.pem"
+
+    OWNER: str = "library"
+    TYPE: str = "Bearer"
+    ALGORITHM: str = "RS256"
+
+    ACCESS_TOKEN_TYPE: str = "access"
+    REFRESH_TOKEN_TYPE: str = "refresh"
+    TYPE_FIELD: str = "type"
+
+    ACCESS_TOKEN_EXPIRE_TIMEDELTA: timedelta = timedelta(minutes=15)
+    REFRESH_TOKEN_EXPIRE_TIMEDELTA: timedelta = timedelta(days=30)
+
+
 class AppSettings(BaseModel):
     MODE: Literal["TEST", "LOCAL", "DEV", "PROD"] = os.getenv("APP_MODE")  # type: ignore
 
 
 class Settings(BaseSettings):
     db: DatabaseSettings = DatabaseSettings()
+    jwt: JWTSettings = JWTSettings()
     app: AppSettings = AppSettings()
 
 
