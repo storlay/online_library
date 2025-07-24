@@ -12,10 +12,10 @@ class BaseManager(ABC):
     @abstractmethod
     async def __aenter__(self):
         """Enter the asynchronous context"""
-        pass
+        return self
 
     @abstractmethod
-    async def __aexit__(self, *args):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Exit the asynchronous context"""
         pass
 
