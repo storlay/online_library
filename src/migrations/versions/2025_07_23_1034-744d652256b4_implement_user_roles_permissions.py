@@ -12,6 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.orm import Session
 
+from src.config import PermissionEnum
 from src.config import RolesIDEnum
 
 revision: str = '744d652256b4'
@@ -71,14 +72,8 @@ def upgrade() -> None:
     )
 
     permissions_data = [
-        {'name': 'admin:manage_system', 'description': 'Allows overall system management.'},
-        {'name': 'admin:manage_roles', 'description': 'Allows managing user roles.'},
-        {'name': 'books:create', 'description': 'Allows creating books.'},
-        {'name': 'books:edit_own', 'description': 'Allows editing own books.'},
-        {'name': 'books:edit_any', 'description': 'Allows editing any books.'},
-        {'name': 'books:view', 'description': 'Allows viewing books.'},
-        {'name': 'reviews:create', 'description': 'Allows creating reviews and ratings.'},
-        {'name': 'favorites:manage', 'description': 'Allows managing favorites.'},
+        {'name': perm.value, 'description': perm.description}
+        for perm in PermissionEnum
     ]
     op.bulk_insert(permissions_table, permissions_data)
 
@@ -88,26 +83,53 @@ def upgrade() -> None:
     all_permissions = session.execute(sa.select(permissions_table.c.id, permissions_table.c.name)).fetchall()
     perm_map = {perm_name: perm_id for perm_id, perm_name in all_permissions}
 
-    role_permissions_data = [
-        {'role_id': RolesIDEnum.ADMIN.value, 'permission_id': perm_map['admin:manage_system']},
-        {'role_id': RolesIDEnum.ADMIN.value, 'permission_id': perm_map['admin:manage_roles']},
-        {'role_id': RolesIDEnum.ADMIN.value, 'permission_id': perm_map['books:edit_any']},
-        {'role_id': RolesIDEnum.ADMIN.value, 'permission_id': perm_map['books:create']},
-        {'role_id': RolesIDEnum.ADMIN.value, 'permission_id': perm_map['books:view']},
-        {'role_id': RolesIDEnum.ADMIN.value, 'permission_id': perm_map['reviews:create']},
-        {'role_id': RolesIDEnum.ADMIN.value, 'permission_id': perm_map['favorites:manage']},
-
-        {'role_id': RolesIDEnum.AUTHOR.value, 'permission_id': perm_map['books:create']},
-        {'role_id': RolesIDEnum.AUTHOR.value, 'permission_id': perm_map['books:edit_own']},
-        {'role_id': RolesIDEnum.AUTHOR.value, 'permission_id': perm_map['books:view']},
-        {'role_id': RolesIDEnum.AUTHOR.value, 'permission_id': perm_map['reviews:create']},
-        {'role_id': RolesIDEnum.AUTHOR.value, 'permission_id': perm_map['favorites:manage']},
-
-        {'role_id': RolesIDEnum.READER.value, 'permission_id': perm_map['books:view']},
-        {'role_id': RolesIDEnum.READER.value, 'permission_id': perm_map['reviews:create']},
-        {'role_id': RolesIDEnum.READER.value, 'permission_id': perm_map['favorites:manage']},
+    reader_permission_ids = {
+        perm_map[PermissionEnum.BOOKS_READ_ANY],
+        perm_map[PermissionEnum.REVIEWS_CREATE],
+        perm_map[PermissionEnum.REVIEWS_READ_ANY],
+        perm_map[PermissionEnum.REVIEWS_UPDATE_OWN],
+        perm_map[PermissionEnum.FAVORITES_MANAGE_OWN],
+        perm_map[PermissionEnum.USERS_READ_PROFILE],
+        perm_map[PermissionEnum.USERS_UPDATE_PROFILE],
+    }
+    author_permission_ids = reader_permission_ids.union({
+        perm_map[PermissionEnum.BOOKS_CREATE],
+        perm_map[PermissionEnum.BOOKS_UPDATE_OWN],
+        perm_map[PermissionEnum.BOOKS_DELETE_OWN],
+        perm_map[PermissionEnum.FILES_UPLOAD_OWN_BOOK],
+    })
+    admin_permission_ids = author_permission_ids.union({
+        perm_map[PermissionEnum.USERS_READ_ANY],
+        perm_map[PermissionEnum.USERS_UPDATE_ANY],
+        perm_map[PermissionEnum.USERS_MANAGE_ROLES],
+        perm_map[PermissionEnum.USERS_BLOCK],
+        perm_map[PermissionEnum.BOOKS_UPDATE_ANY],
+        perm_map[PermissionEnum.BOOKS_DELETE_ANY],
+        perm_map[PermissionEnum.FILES_UPLOAD_ANY_BOOK],
+        perm_map[PermissionEnum.REVIEWS_DELETE_ANY],
+        perm_map[PermissionEnum.ADMIN_DASHBOARD_VIEW],
+        perm_map[PermissionEnum.ADMIN_REPORTS_GENERATE],
+    })
+    admin_role_permissions = [
+        {'role_id': RolesIDEnum.ADMIN.value, 'permission_id': perm_id}
+        for perm_id in admin_permission_ids
     ]
 
+    author_role_permissions = [
+        {'role_id': RolesIDEnum.AUTHOR.value, 'permission_id': perm_id}
+        for perm_id in author_permission_ids
+    ]
+
+    reader_role_permissions = [
+        {'role_id': RolesIDEnum.READER.value, 'permission_id': perm_id}
+        for perm_id in reader_permission_ids
+    ]
+
+    role_permissions_data = (
+            admin_role_permissions
+            + author_role_permissions
+            + reader_role_permissions
+    )
     op.bulk_insert(role_permission_table, role_permissions_data)
 
 
