@@ -58,14 +58,24 @@ class JWTSettings(BaseModel):
     REFRESH_TOKEN_EXPIRE_TIMEDELTA: timedelta = timedelta(days=30)
 
 
+class PaginationSettings(BaseModel):
+    MAX_ENTITIES_PER_PAGE: int = 100
+
+
 class AppSettings(BaseModel):
-    MODE: Literal["TEST", "LOCAL", "DEV", "PROD"] = os.getenv("APP_MODE")  # type: ignore
+    MODE: Literal[
+        "TEST",
+        "LOCAL",
+        "DEV",
+        "PROD",
+    ] = os.getenv("APP_MODE")  # type: ignore
 
 
 class Settings(BaseSettings):
+    app: AppSettings = AppSettings()
     db: DatabaseSettings = DatabaseSettings()
     jwt: JWTSettings = JWTSettings()
-    app: AppSettings = AppSettings()
+    pagination: PaginationSettings = PaginationSettings()
 
 
 settings = Settings()
