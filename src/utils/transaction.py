@@ -2,11 +2,15 @@ from abc import ABC
 from abc import abstractmethod
 from typing import Callable
 
+from src.repositories.permission import PermissionRepository
+from src.repositories.permission import RoleRepository
 from src.repositories.user import UserRepository
 
 
 class BaseManager(ABC):
     user: UserRepository
+    permission: PermissionRepository
+    role: RoleRepository
 
     @abstractmethod
     def __init__(self):
@@ -36,6 +40,8 @@ class TransactionManager(BaseManager):
     async def __aenter__(self):
         self.session = self.session_factory()
         self.user = UserRepository(self.session)
+        self.role = RoleRepository(self.session)
+        self.permission = PermissionRepository(self.session)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
