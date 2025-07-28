@@ -127,4 +127,4 @@ cython_debug/
 .DS_Store
 
 # JWT Keys
-src/certs/jwt
+src/certs/jwt/*.pem
